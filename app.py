@@ -7,7 +7,7 @@ from db import db
 from resources.books import BookRequest, BookRequests
 from resources.movies import MovieRequest, MovieRequests
 from resources.shows import ShowRequest, ShowRequests
-# from resources.music import SongRequest, SongRequests
+from resources.music import MusicRequest, MusicRequests
 from resources.user import UserRegister, User, UserLogin, TokenRefresh
 
 
@@ -37,10 +37,11 @@ api.add_resource(BookRequest, '/book/request')
 api.add_resource(BookRequests, '/book/requests')
 api.add_resource(MovieRequest, '/movie/request')
 api.add_resource(MovieRequests, '/movie/requests')
+api.add_resource(MusicRequest, '/music/request')
+api.add_resource(MusicRequests, '/music/requests')
 api.add_resource(ShowRequest, '/show/request')
 api.add_resource(ShowRequests, '/show/requests')
-# api.add_resource(SongRequest, '/song/request')
-# api.add_resource(SongRequests, '/song/requests')
+
 
 api.add_resource(UserLogin, '/login')
 api.add_resource(User, '/user/<int:user_id>')

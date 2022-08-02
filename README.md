@@ -6,8 +6,17 @@ PostgreSQL Database
 ## Features
 
 ### Movie Requests
+
+
 ### Show Requests
+
+
 ### Book Requests
+
+
+### Music Requests
+
+
 
 ## TODO List:
 * Integrate User accounts (JWT?)
@@ -19,3 +28,7 @@ PostgreSQL Database
 * Implement Unit Tests
 * Implement Simple Front End
 * Docker Build
+* Look into different api for Movies and TV Shows (without daily limit)
+
+## Possible Ideas List
+* Multiple APIs per lookup for more uncommon media
