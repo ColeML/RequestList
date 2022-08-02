@@ -1,9 +1,9 @@
 from __future__ import annotations
-from db import db
+from api.db import db
 
 
-class ShowRequestModel(db.Model):
-    __tablename__ = 'show_requests'
+class MovieRequestModel(db.Model):
+    __tablename__ = 'movie_requests'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
@@ -17,16 +17,17 @@ class ShowRequestModel(db.Model):
         self.title = title
         self.year = year
         self.imdb_id = imdb_id
-
+        
     def json(self) -> dict:
         return {'id': self.id, 'title': self.title, 'year': self.year, 'imdb_id': self.imdb_id}
 
     @classmethod
-    def find_by_id(cls, imdb_id: str) -> ShowRequestModel:
+    def find_by_id(cls, imdb_id: str) -> MovieRequestModel | None:
         return cls.query.filter_by(imdb_id=imdb_id).first()
 
     @classmethod
-    def find_all(cls) -> list[ShowRequestModel]:
+    def find_all(cls) -> list[MovieRequestModel]:
+        print(type(cls.query.all()))
         return cls.query.all()
 
     def save_to_db(self) -> None:

@@ -1,5 +1,5 @@
 from datetime import date
-from lookup.util import fetch_data, sanitize
+from api.lookup.util import fetch_data, sanitize
 from typing import Optional
 
 
@@ -76,7 +76,7 @@ class MusicLookup:
 
         return {
             "track": music_data.get("title"),
-            "release_date": date.fromisoformat(music_data.get("release_date")),
+            "release_date": cls._convert_to_date(music_data.get("release_date")),
             "artist": artist_data.get('name'),
             "album": album_data.get('title'),
             "deezer_id": music_data.get("id"),
@@ -97,3 +97,8 @@ class MusicLookup:
             "music_type": album_data.get('type'),
             "cover": album_data.get('cover_medium')
         }
+
+    @classmethod
+    def _convert_to_date(cls, _date) -> date | None:
+        if _date:
+            return date.fromisoformat(_date)

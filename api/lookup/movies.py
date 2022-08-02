@@ -1,4 +1,4 @@
-from lookup.util import fetch_data
+from api.lookup.util import fetch_data
 
 
 class VideoLookup:

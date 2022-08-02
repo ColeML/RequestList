@@ -2,7 +2,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token, jwt_re
 from flask_restful import Resource, reqparse
 from hmac import compare_digest
 
-from models.user import UserModel
+from api.models.user import UserModel
 
 _user_parser = reqparse.RequestParser()
 _user_parser.add_argument('username', type=str, required=True, help='Username Required.')

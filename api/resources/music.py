@@ -1,8 +1,7 @@
 from flask_restful import Resource, reqparse
-from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 
-from models.music import MusicRequestModel
-from lookup.music import MusicLookup
+from api.models.music import MusicRequestModel
+from api.lookup.music import MusicLookup
 
 
 class MusicRequest(Resource):
@@ -39,6 +38,9 @@ class MusicRequest(Resource):
                 return {'message': f"Unable to find track(s) with - Artist: {artist}"}, 400
         else:
             return {'message': f'Requires title, album, or artist, or deezer id to search with.'}, 400
+
+        if music.get("release_date"):
+            music["release_date"] = str(music.get("release_date"))
 
         return music, 200
 

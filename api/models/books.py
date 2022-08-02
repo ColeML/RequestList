@@ -1,5 +1,5 @@
 from __future__ import annotations
-from db import db
+from api.db import db
 
 
 class BookRequestModel(db.Model):

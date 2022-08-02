@@ -3,12 +3,12 @@ from flask_restful import Api
 from flask_jwt_extended import JWTManager
 import os
 
-from db import db
-from resources.books import BookRequest, BookRequests
-from resources.movies import MovieRequest, MovieRequests
-from resources.shows import ShowRequest, ShowRequests
-from resources.music import MusicRequest, MusicRequests
-from resources.user import UserRegister, User, UserLogin, TokenRefresh
+from api.db import db
+from api.resources.books import BookRequest, BookRequests
+from api.resources.movies import MovieRequest, MovieRequests
+from api.resources.shows import ShowRequest, ShowRequests
+from api.resources.music import MusicRequest, MusicRequests
+from api.resources.user import UserRegister, User, UserLogin, TokenRefresh
 
 
 app = Flask(__name__)

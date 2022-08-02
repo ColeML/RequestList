@@ -1,4 +1,4 @@
-from lookup.util import fetch_data, sanitize
+from api.lookup.util import fetch_data, sanitize
 
 
 class BookLookup:
