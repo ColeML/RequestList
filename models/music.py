@@ -45,10 +45,6 @@ class MusicRequestModel(db.Model):
                 'request_date': str(self.request_date)}
 
     @classmethod
-    def find_by_title(cls, title: str, year: int) -> MusicRequestModel | None:
-        return cls.query.filter_by(title=title, year=year).first()
-
-    @classmethod
     def find_by_deezer_id(cls, deezer_id: int) -> MusicRequestModel | None:
         return cls.query.filter_by(deezer_id=deezer_id).first()
 
