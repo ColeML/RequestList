@@ -1,7 +1,10 @@
 # RequestList
 
 ## Python3 Flask application that is used to track wanted media.
+Flask API
+React Frontend
 PostgreSQL Database
+Deployed on Heroku
 
 ## Features
 
