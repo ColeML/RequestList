@@ -1,5 +1,4 @@
-from datetime import date
-from api.lookup.util import fetch_data, sanitize
+from api.lookup.util import fetch_data, sanitize, convert_to_date
 from typing import Optional
 
 
@@ -35,7 +34,7 @@ class MusicLookup:
 
         if json_values:
             for track in json_values["data"]:
-                track_list.append(cls._parse_track_data(track))
+                track_list.append(cls._parse_track_data(track, json=True))
 
         return track_list
 
@@ -65,18 +64,21 @@ class MusicLookup:
         track_list = []
         if json_values:
             for track in json_values["data"]:
-                track_list.append(cls._parse_track_data(track))
+                track_list.append(cls._parse_track_data(track, json=True))
 
         return track_list
 
     @classmethod
-    def _parse_track_data(cls, music_data: dict) -> dict:
+    def _parse_track_data(cls, music_data: dict, json: Optional[bool] = False) -> dict:
         artist_data = music_data.get('artist')
         album_data = music_data.get('album')
 
+        release_date = music_data.get('release_date')
+        release_date = release_date if json else convert_to_date(release_date)
+
         return {
             "track": music_data.get("title"),
-            "release_date": cls._convert_to_date(music_data.get("release_date")),
+            "release_date": release_date,
             "artist": artist_data.get('name'),
             "album": album_data.get('title'),
             "deezer_id": music_data.get("id"),
@@ -97,8 +99,3 @@ class MusicLookup:
             "music_type": album_data.get('type'),
             "cover": album_data.get('cover_medium')
         }
-
-    @classmethod
-    def _convert_to_date(cls, _date) -> date | None:
-        if _date:
-            return date.fromisoformat(_date)

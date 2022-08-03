@@ -17,14 +17,8 @@ class MusicRequest(Resource):
         title = data.get("title")
         album = data.get("album")
         artist = data.get("artist")
-        deezer_id = data.get("id")
-        music_type = data.get("music_type")
 
-        if deezer_id and music_type:
-            music = MusicLookup.lookup_by_deezer_id(deezer_id, music_type)
-            if not music:
-                return {'message': f"Unable to find {music_type} with - Deezer Id: {deezer_id}"}, 400
-        elif title:
+        if title:
             music = MusicLookup.search_for_track(title, artist, album)
             if not music:
                 return {'message': f"Unable to find track(s) with - Title {title}, Artist: {artist}, Album: {album}"}, 400
@@ -38,10 +32,6 @@ class MusicRequest(Resource):
                 return {'message': f"Unable to find track(s) with - Artist: {artist}"}, 400
         else:
             return {'message': f'Requires title, album, or artist, or deezer id to search with.'}, 400
-
-        for track in music:
-            if track.get("release_date"):
-                track["release_date"] = str(music.get("release_date"))
 
         return music, 200
 
