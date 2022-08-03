@@ -39,8 +39,9 @@ class MusicRequest(Resource):
         else:
             return {'message': f'Requires title, album, or artist, or deezer id to search with.'}, 400
 
-        if music.get("release_date"):
-            music["release_date"] = str(music.get("release_date"))
+        for track in music:
+            if track.get("release_date"):
+                track["release_date"] = str(music.get("release_date"))
 
         return music, 200
 
