@@ -8,9 +8,7 @@ from api.resources.routes import initialize_routes
 
 app = Flask(__name__, static_url_path='', static_folder='frontend/build')
 api = Api(app)
-
 app.config.from_object('api.config.Config')
-
 initialize_db(app)
 initialize_routes(api)
 

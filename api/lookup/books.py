@@ -1,4 +1,5 @@
-from api.lookup.util import fetch_data, sanitize
+from api.lookup.util import fetch_data, sanitize, convert_to_date
+from typing import Optional
 
 
 class BookLookup:
@@ -15,7 +16,7 @@ class BookLookup:
             for book in json_values["items"]:
                 release_date = book["volumeInfo"].get("publishedDate")
                 if str(year) in release_date and 'en' in book["volumeInfo"]["language"]:
-                    book_list.append(cls.parse_book_data(book))
+                    book_list.append(cls.parse_book_data(book, json=True))
 
         return book_list
 
@@ -29,7 +30,7 @@ class BookLookup:
         if json_values:
             for book in json_values["items"]:
                 if 'en' in book["volumeInfo"]["language"]:
-                    book_list.append(cls.parse_book_data(book))
+                    book_list.append(cls.parse_book_data(book, json=True))
 
         return book_list
 
@@ -40,11 +41,10 @@ class BookLookup:
         json_values = fetch_data(url)
 
         book_list = []
-
         if json_values:
             for book in json_values["items"]:
                 if 'en' in book["volumeInfo"]["language"]:
-                    book_list.append(cls.parse_book_data(book))
+                    book_list.append(cls.parse_book_data(book, json=True))
 
         return book_list
 
@@ -58,7 +58,7 @@ class BookLookup:
             return cls.parse_book_data(json_values["items"][0])
 
     @classmethod
-    def parse_book_data(cls, book_data: dict) -> dict:
+    def parse_book_data(cls, book_data: dict, json: Optional[bool] = False) -> dict:
         volume_info = book_data["volumeInfo"]
         ids = volume_info.get("industryIdentifiers")
         isbn_10, isbn_13 = None, None
@@ -69,12 +69,16 @@ class BookLookup:
             elif _id["type"] == 'ISBN_10':
                 isbn_10 = _id['identifier']
 
-        book = {'title': volume_info.get('title'),
-                'subtitle': volume_info.get('subtitle'),
-                'authors': volume_info.get('authors'),
-                'date': volume_info.get('publishedDate'),
-                'isbn_10': isbn_10,
-                'isbn_13': isbn_13
-                }
+        release_date = volume_info.get('publishedDate')
+        release_date = release_date if json else convert_to_date(release_date)
+
+        book = {
+            'title': volume_info.get('title'),
+            'subtitle': volume_info.get('subtitle'),
+            'authors': ', '.join(volume_info.get('authors')),
+            'release_date': release_date,
+            'isbn_10': isbn_10,
+            'isbn_13': isbn_13
+        }
 
         return book
