@@ -1,5 +1,6 @@
 from __future__ import annotations
 from api.db import db
+from datetime import datetime
 
 
 class MovieRequestModel(db.Model):
@@ -9,6 +10,7 @@ class MovieRequestModel(db.Model):
     title = db.Column(db.String(80))
     year = db.Column(db.Integer)
     imdb_id = db.Column(db.String(80))
+    request_date = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     store = db.relationship('UserModel')
@@ -17,9 +19,15 @@ class MovieRequestModel(db.Model):
         self.title = title
         self.year = year
         self.imdb_id = imdb_id
+        self.request_date = datetime.now()
         
     def json(self) -> dict:
-        return {'id': self.id, 'title': self.title, 'year': self.year, 'imdb_id': self.imdb_id}
+        return {'id': self.id,
+                'title': self.title,
+                'year': str(self.year),
+                'imdb_id': self.imdb_id,
+                'user_id': self.user_id,
+                'request_date': str(self.request_date)}
 
     @classmethod
     def find_by_id(cls, imdb_id: str) -> MovieRequestModel | None:
@@ -27,7 +35,6 @@ class MovieRequestModel(db.Model):
 
     @classmethod
     def find_all(cls) -> list[MovieRequestModel]:
-        print(type(cls.query.all()))
         return cls.query.all()
 
     def save_to_db(self) -> None:
