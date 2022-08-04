@@ -24,15 +24,6 @@ class VideoLookup:
             return json_values["Search"]
 
     @classmethod
-    def lookup_by_title(cls, title: str, year: int, _type: str) -> dict:
-        url = f"{cls.base_url}?t={title}&y={year}&type={_type}&apikey={cls.api_key}"
-
-        json_values = fetch_data(url)
-
-        if json_values["Response"] == "True":
-            return {'imdb_id': json_values['imdbID']}
-
-    @classmethod
     def lookup_by_id(cls, imdb_id: str) -> dict:
         url = f"{cls.base_url}?i={imdb_id}&apikey={cls.api_key}"
 
