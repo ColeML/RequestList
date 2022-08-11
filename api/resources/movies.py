@@ -72,6 +72,6 @@ class MovieRequests(Resource):
         if user.user_type is UserLevels.ADMIN:
             requests = [request.json() for request in MovieRequestModel.find_all()]
         else:
-            requests = [request.join() for request in MovieRequestModel.find_all_by_user(get_jwt_identity())]
+            requests = [request.json() for request in MovieRequestModel.find_all_by_user(get_jwt_identity())]
 
         return {'movie_requests': requests}, 200
