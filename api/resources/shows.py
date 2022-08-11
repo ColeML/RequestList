@@ -53,7 +53,7 @@ class ShowRequest(Resource):
         if not show:
             abort(404, message=f"Request for {imdb_id} does not exists.")
 
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if get_jwt_identity() is not show.user and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
@@ -65,7 +65,7 @@ class ShowRequest(Resource):
 class ShowRequests(Resource):
     @jwt_required()
     def get(self) -> (dict, int):
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if user.user_type is UserLevels.ADMIN:
             requests = [request.json() for request in ShowRequestModel.find_all()]
         else:

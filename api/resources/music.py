@@ -67,7 +67,7 @@ class MusicRequest(Resource):
         if not music:
             abort(404, message=f"Request does not exist.")
 
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if get_jwt_identity() is not music.user and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
@@ -79,7 +79,7 @@ class MusicRequest(Resource):
 class MusicRequests(Resource):
     @jwt_required()
     def get(self) -> (dict, int):
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if user.user_type is UserLevels.ADMIN:
             requests = [request.json() for request in MusicRequestModel.find_all()]
         else:

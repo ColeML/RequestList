@@ -44,7 +44,7 @@ class User(Resource):
     @classmethod
     @jwt_required(refresh=True)
     def delete(cls, user_id) -> (dict, int):
-        user = UserModel.find_by_id(user_id)
+        user_id = UserModel.find_by_id(user_id)
         if not user:
             return {'message': 'User deleted.'}, 200
 
@@ -58,8 +58,8 @@ class UserLogin(Resource):
         if not user or not compare_digest(user.password, data['password']):
             abort(401, message='Invalid credentials')
 
-        access_token = create_access_token(identity=user.username, fresh=True)
-        refresh_token = create_refresh_token(user.username)
+        access_token = create_access_token(identity=user.id, fresh=True)
+        refresh_token = create_refresh_token(user.id)
         return {'access_token': access_token, 'refresh_token': refresh_token}, 200
 
 

@@ -12,14 +12,14 @@ class MovieRequestModel(db.Model):
     imdb_id = db.Column(db.String(80))
     request_date = db.Column(db.DateTime)
 
-    user = db.Column(db.String, db.ForeignKey('users.username'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     users = db.relationship('UserModel')
 
-    def __init__(self, title: str, year: int, imdb_id: str, user: str) -> None:
+    def __init__(self, title: str, year: int, imdb_id: str, user: int) -> None:
         self.title = title
         self.year = year
         self.imdb_id = imdb_id
-        self.user = user
+        self.user_id = user
         self.request_date = datetime.now()
         
     def json(self) -> dict:

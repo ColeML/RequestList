@@ -55,7 +55,7 @@ class MovieRequest(Resource):
         if not movie:
             abort(404, message=f"Request for {imdb_id} does not exist.")
 
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if get_jwt_identity() is not movie.user and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
@@ -67,7 +67,7 @@ class MovieRequest(Resource):
 class MovieRequests(Resource):
     @jwt_required()
     def get(self) -> (dict, int):
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
 
         if user.user_type is UserLevels.ADMIN:
             requests = [request.json() for request in MovieRequestModel.find_all()]

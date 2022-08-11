@@ -62,7 +62,7 @@ class BookRequest(Resource):
         if not book:
             abort(404, message=f"{book_type} request with {isbn} does not exist.")
 
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if get_jwt_identity() is not book.user and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
@@ -74,7 +74,7 @@ class BookRequest(Resource):
 class BookRequests(Resource):
     @jwt_required()
     def get(self) -> (dict, int):
-        user = UserModel.find_by_username(get_jwt_identity())
+        user = UserModel.find_by_id(get_jwt_identity())
         if user.user_type is UserLevels.ADMIN:
             requests = [request.json() for request in BookRequestModel.find_all()]
         else:
