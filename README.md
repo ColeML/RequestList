@@ -4,12 +4,16 @@
 Flask API
 React Frontend
 PostgreSQL Database
+Redis
 Deployed on Heroku
 
 ## Features
-
 ### Movie Requests
+#### Lookup
+Look up Movies using the omdb api.
 
+#### Requests
+Requests are made using the imdb_id of the wanted media file.
 
 ### Show Requests
 
@@ -24,8 +28,7 @@ Deployed on Heroku
 ## TODO List:
 * Integrate User accounts (JWT?)
 * Assign User ID to Requests
-* Implement MusicLookup
-* Implement MusicRequest
+* Implement Email notifications
 * Implement Config File and Parser / Integrate
 * Implement Functional Tests
 * Implement Unit Tests

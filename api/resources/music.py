@@ -1,7 +1,9 @@
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse, abort
 
-from api.models.music import MusicRequestModel
 from api.lookup.music import MusicLookup
+from api.models.music import MusicRequestModel
+from api.models.user import UserModel, UserLevels
 
 
 class MusicRequest(Resource):
@@ -36,7 +38,7 @@ class MusicRequest(Resource):
 
         return music, 200
 
-    # @jwt_required()
+    @jwt_required()
     def post(self) -> (dict, int):
         data = MusicRequest.id_parser.parse_args()
         deezer_id, music_type = data.get("id"), data.get("music_type")
@@ -49,15 +51,14 @@ class MusicRequest(Resource):
         if not music:
             abort(404, message=f"Deezer ID {deezer_id} not found.")
 
-        music = MusicRequestModel(**music)
+        music = MusicRequestModel(**music, user=get_jwt_identity())
 
         music.save_to_db()
 
         return music.json(), 200
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self) -> (dict, int):
-        # TODO Make sure that user can only delete their own requests, Admins can delete all
         data = MusicRequest.id_parser.parse_args()
         deezer_id = data.get("id")
 
@@ -66,14 +67,22 @@ class MusicRequest(Resource):
         if not music:
             abort(404, message=f"Request does not exist.")
 
+        user = UserModel.find_by_username(get_jwt_identity())
+        if get_jwt_identity() is not music.user and user.user_type is not UserLevels.ADMIN:
+            abort(401, message=f"Only requesting user or admin can remove the request.")
+
         music.delete_from_db()
 
         return {'message': f'Request deleted successfully.'}, 200
 
 
 class MusicRequests(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self) -> (dict, int):
-        # TODO Only return requests from that user unless admin
-        requests = [request.json() for request in MusicRequestModel.find_all()]
+        user = UserModel.find_by_username(get_jwt_identity())
+        if user.user_type is UserLevels.ADMIN:
+            requests = [request.json() for request in MusicRequestModel.find_all()]
+        else:
+            requests = [request.join() for request in MusicRequestModel.find_all_by_user(get_jwt_identity())]
+
         return {'music_requests': requests}, 200

@@ -1,7 +1,9 @@
 from flask_restful import Resource, reqparse, abort
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from api.models.movies import MovieRequestModel
 from api.lookup.movies import VideoLookup
+from api.models.movies import MovieRequestModel
+from api.models.user import UserModel, UserLevels
 
 
 class MovieRequest(Resource):
@@ -24,7 +26,7 @@ class MovieRequest(Resource):
 
         return movies, 200
 
-    # @jwt_required()
+    @jwt_required()
     def post(self) -> (dict, int):
         data = MovieRequest.id_parser.parse_args()
         imdb_id = data.get("imdb_id")
@@ -36,13 +38,13 @@ class MovieRequest(Resource):
         if not movie:
             abort(404, message=f"Movie with imdb_id {imdb_id} not found.")
 
-        movie = MovieRequestModel(**movie, imdb_id=imdb_id)
+        movie = MovieRequestModel(**movie, imdb_id=imdb_id, user=get_jwt_identity())
 
         movie.save_to_db()
 
         return movie.json(), 200
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self) -> (dict, int):
         data = MovieRequest.id_parser.parse_args()
 
@@ -53,13 +55,23 @@ class MovieRequest(Resource):
         if not movie:
             abort(404, message=f"Request for {imdb_id} does not exist.")
 
+        user = UserModel.find_by_username(get_jwt_identity())
+        if get_jwt_identity() is not movie.user and user.user_type is not UserLevels.ADMIN:
+            abort(401, message=f"Only requesting user or admin can remove the request.")
+
         movie.delete_from_db()
 
         return {'message': f'Request deleted successfully.'}, 200
 
 
 class MovieRequests(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self) -> (dict, int):
-        requests = [request.json() for request in MovieRequestModel.find_all()]
+        user = UserModel.find_by_username(get_jwt_identity())
+
+        if user.user_type is UserLevels.ADMIN:
+            requests = [request.json() for request in MovieRequestModel.find_all()]
+        else:
+            requests = [request.join() for request in MovieRequestModel.find_all_by_user(get_jwt_identity())]
+
         return {'movie_requests': requests}, 200

@@ -17,13 +17,14 @@ class MusicRequestModel(db.Model):
     cover = db.Column(db.String(160))
     request_date = db.Column(db.DateTime)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    store = db.relationship('UserModel')
+    user = db.Column(db.String(40), db.ForeignKey('users.username'))
+    users = db.relationship('UserModel')
 
-    def __init__(self, deezer_id, track: Optional[str] = None, release_date: Optional[date] = None,
+    def __init__(self, deezer_id: int, user: str, track: Optional[str] = None, release_date: Optional[date] = None,
                  artist: Optional[str] = None, album: Optional[str] = None, music_type: Optional[str] = None,
                  cover: Optional[str] = None) -> None:
         self.track = track
+        self.user = user
         self.release_date = release_date
         self.artist = artist
         self.album = album
@@ -51,6 +52,10 @@ class MusicRequestModel(db.Model):
     @classmethod
     def find_all(cls) -> list[MusicRequestModel]:
         return cls.query.all()
+
+    @classmethod
+    def find_all_by_user(cls, username: str) -> list[MusicRequestModel]:
+        return cls.query.filter_by(user=username).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)

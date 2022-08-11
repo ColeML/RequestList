@@ -1,8 +1,9 @@
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse, abort
-from flask_jwt_extended import jwt_required
 
-from api.models.shows import ShowRequestModel
 from api.lookup.movies import VideoLookup
+from api.models.shows import ShowRequestModel
+from api.models.user import UserModel, UserLevels
 
 
 class ShowRequest(Resource):
@@ -24,7 +25,7 @@ class ShowRequest(Resource):
 
         return shows, 200
 
-    # @jwt_required()
+    @jwt_required()
     def post(self) -> (dict, int):
         data = ShowRequest.id_parser.parse_args()
         imdb_id = data.get("imdb_id")
@@ -36,13 +37,13 @@ class ShowRequest(Resource):
         if show is None:
             abort(404,  message=f'Unable to find show with IMDB id: {imdb_id}')
 
-        show = ShowRequestModel(**show, imdb_id=imdb_id)
+        show = ShowRequestModel(**show, imdb_id=imdb_id, user=get_jwt_identity())
 
         show.save_to_db()
 
         return show.json(), 200
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self) -> (dict, int):
         data = ShowRequest.id_parser.parse_args()
         imdb_id = data.get("imdb_id")
@@ -52,13 +53,22 @@ class ShowRequest(Resource):
         if not show:
             abort(404, message=f"Request for {imdb_id} does not exists.")
 
+        user = UserModel.find_by_username(get_jwt_identity())
+        if get_jwt_identity() is not show.user and user.user_type is not UserLevels.ADMIN:
+            abort(401, message=f"Only requesting user or admin can remove the request.")
+
         show.delete_from_db()
 
         return {'message': f'Request deleted successfully.'}, 200
 
 
 class ShowRequests(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self) -> (dict, int):
-        requests = [request.json() for request in ShowRequestModel.find_all()]
+        user = UserModel.find_by_username(get_jwt_identity())
+        if user.user_type is UserLevels.ADMIN:
+            requests = [request.json() for request in ShowRequestModel.find_all()]
+        else:
+            requests = [request.join() for request in ShowRequestModel.find_all_by_user(get_jwt_identity())]
+
         return {'show_requests': requests}, 200

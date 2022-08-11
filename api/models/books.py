@@ -16,10 +16,10 @@ class BookRequestModel(db.Model):
     isbn_10 = db.Column(db.String(80))
     book_format = db.Column(db.String(80))
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    store = db.relationship('UserModel')
+    user = db.Column(db.String(40), db.ForeignKey('users.username'))
+    users = db.relationship('UserModel')
 
-    def __init__(self, title: str, authors: list[str], subtitle: Optional[str] = None,
+    def __init__(self, title: str, authors: list[str], user, subtitle: Optional[str] = None,
                  release_date: Optional[date] = None, isbn_13: Optional[str] = None,
                  isbn_10: Optional[int] = None, book_format: Optional[str] = None) -> None:
         self.title = title
@@ -28,6 +28,7 @@ class BookRequestModel(db.Model):
         self.release_date = release_date
         self.isbn_13 = isbn_13
         self.isbn_10 = isbn_10
+        self.user = user
         self.book_format = book_format
 
     def json(self) -> dict:
@@ -48,6 +49,10 @@ class BookRequestModel(db.Model):
     @classmethod
     def find_all(cls) -> list[BookRequestModel]:
         return cls.query.all()
+
+    @classmethod
+    def find_all_by_user(cls, username: str) -> list[BookRequestModel]:
+        return cls.query.filter_by(user=username).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)

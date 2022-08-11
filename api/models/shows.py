@@ -12,13 +12,14 @@ class ShowRequestModel(db.Model):
     imdb_id = db.Column(db.String(80))
     request_date = db.Column(db.DateTime)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    store = db.relationship('UserModel')
+    user = db.Column(db.String(40), db.ForeignKey('users.username'))
+    users = db.relationship('UserModel')
 
-    def __init__(self, title: str, year: int, imdb_id: str) -> None:
+    def __init__(self, title: str, year: int, imdb_id: str, user: str) -> None:
         self.title = title
         self.year = year
         self.imdb_id = imdb_id
+        self.user = user
         self.request_date = datetime.today()
 
     def json(self) -> dict:
@@ -36,6 +37,10 @@ class ShowRequestModel(db.Model):
     @classmethod
     def find_all(cls) -> list[ShowRequestModel]:
         return cls.query.all()
+
+    @classmethod
+    def find_all_by_user(cls, username: str) -> list[ShowRequestModel]:
+        return cls.query.filter_by(user=username).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)

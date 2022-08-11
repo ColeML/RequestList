@@ -7,16 +7,25 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(25))
     password = db.Column(db.String(50))
+    first_name = db.Column(db.String(50))
+    last_name = db.Column(db.String(50))
     email = db.Column(db.String(50))
     user_type = db.Column(db.String(25))
 
-    def __init__(self, username: str, password: str, email: str) -> None:
+    def __init__(self, username: str, password: str, first_name: str, last_name: str, email: str) -> None:
         self.username = username
         self.password = password
         self.email = email
+        self.first_name = first_name
+        self.last_name = last_name
+        self.user_type = UserLevels.USER
 
     def json(self) -> dict:
-        return {'id': self.id, 'username': self.username, 'email': self.email}
+        return {'id': self.id,
+                'username': self.username,
+                'email': self.email,
+                'first': self.first_name,
+                'last': self.last_name}
 
     def save_to_db(self) -> None:
         db.session.add(self)
@@ -37,3 +46,8 @@ class UserModel(db.Model):
     @classmethod
     def find_all(cls):
         return cls.query.all()
+
+
+class UserLevels:
+    ADMIN = 0
+    USER = 1

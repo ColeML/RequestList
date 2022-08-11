@@ -1,8 +1,9 @@
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from flask_restful import Resource, reqparse, abort
-from flask_jwt_extended import jwt_required
 
 from api.models.books import BookRequestModel
 from api.lookup.books import BookLookup
+from api.models.user import UserModel, UserLevels
 
 
 class BookRequest(Resource):
@@ -32,7 +33,7 @@ class BookRequest(Resource):
 
         return books, 200
 
-    # @jwt_required()
+    @jwt_required()
     def post(self) -> (dict, int):
         data = BookRequest.isbn_parser.parse_args()
 
@@ -46,12 +47,12 @@ class BookRequest(Resource):
         if not lookup:
             abort(404, message=f"Book with with isbn {isbn} not found.")
 
-        book = BookRequestModel(**lookup, book_format=book_format)
+        book = BookRequestModel(**lookup, book_format=book_format, user=get_jwt_identity())
         book.save_to_db()
 
         return book.json(), 200
 
-    # @jwt_required()
+    @jwt_required()
     def delete(self) -> (dict, int):
         data = BookRequest.isbn_parser.parse_args()
 
@@ -61,11 +62,22 @@ class BookRequest(Resource):
         if not book:
             abort(404, message=f"{book_type} request with {isbn} does not exist.")
 
+        user = UserModel.find_by_username(get_jwt_identity())
+        if get_jwt_identity() is not book.user and user.user_type is not UserLevels.ADMIN:
+            abort(401, message=f"Only requesting user or admin can remove the request.")
+
         book.delete_from_db()
+
         return {'message': f"Request deleted successfully."}, 200
 
 
 class BookRequests(Resource):
+    @jwt_required()
     def get(self) -> (dict, int):
-        requests = [request.json() for request in BookRequestModel.find_all()]
+        user = UserModel.find_by_username(get_jwt_identity())
+        if user.user_type is UserLevels.ADMIN:
+            requests = [request.json() for request in BookRequestModel.find_all()]
+        else:
+            requests = [request.join() for request in BookRequestModel.find_all_by_user(get_jwt_identity())]
+
         return {'book_requests': requests}, 200
