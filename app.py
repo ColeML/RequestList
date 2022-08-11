@@ -28,7 +28,7 @@ def create_tables() -> None:
 
 
 @jwt.expired_token_loader
-def expired_token_callback():
+def expired_token_callback(callback):
     return jsonify({'Description': 'The token has expired.', 'Error': 'token_expired'}), 401
 
 
@@ -38,17 +38,17 @@ def invalid_token_callback(callback):
 
 
 @jwt.unauthorized_loader
-def unauthorized_callback():
+def unauthorized_callback(callback):
     return jsonify({'Description': 'Request does not contain an access token.', 'Error': 'unauthorized'}), 401
 
 
 @jwt.needs_fresh_token_loader
-def needs_fresh_token_callback():
+def needs_fresh_token_callback(callback):
     return jsonify({'Description': 'Fresh Token Required.', 'Error': 'stale_token'}), 401
 
 
 @jwt.revoked_token_loader
-def revoked_token_callback():
+def revoked_token_callback(callback):
     return jsonify({'Description': 'Token has been revoked.', 'Error': 'revoked_token'}), 401
 
 
