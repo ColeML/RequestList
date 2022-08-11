@@ -1,9 +1,10 @@
 from api.lookup.util import fetch_data
+import os
 
 
 class VideoLookup:
     base_url = "http://www.omdbapi.com"
-    api_key = "4abce0f7"  # TODO Move to config file
+    api_key = os.environ.get("OMDB_API_KEY")
 
     @classmethod
     def search_by_title_year(cls, title: str, year: int, _type: str) -> dict:

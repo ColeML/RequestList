@@ -4,10 +4,10 @@ import os
 
 class Config:
     """ Set Flask configuration from .env file. """
-    ACCESS_EXPIRES = timedelta(hours=6)
 
     # General Config
-    SECRET_KEY = "temp"  # TODO move to .env (os.environ.get('SECRET_KEY'))
+    ACCESS_EXPIRES = timedelta(hours=6)
+    SECRET_KEY = os.environ.get("SECRET_KEY")
 
     # Database Config
     uri = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
