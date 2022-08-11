@@ -3,7 +3,7 @@ import redis
 
 db = SQLAlchemy()
 
-jwt_redis_blocklist = redis.StrictRedis(host="localhost", port=6739, db=0, decode_responses=True)
+jwt_redis_blocklist = redis.StrictRedis(host="localhost", port=21400, db=0, decode_responses=True)
 
 def initialize_db(app) -> None:
     db.init_app(app)
