@@ -56,7 +56,7 @@ class MovieRequest(Resource):
             abort(404, message=f"Request for {imdb_id} does not exist.")
 
         user = UserModel.find_by_id(get_jwt_identity())
-        if get_jwt_identity() is not movie.user and user.user_type is not UserLevels.ADMIN:
+        if get_jwt_identity() is not movie.user_id and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
         movie.delete_from_db()

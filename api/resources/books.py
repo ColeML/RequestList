@@ -63,7 +63,7 @@ class BookRequest(Resource):
             abort(404, message=f"{book_type} request with {isbn} does not exist.")
 
         user = UserModel.find_by_id(get_jwt_identity())
-        if get_jwt_identity() is not book.user and user.user_type is not UserLevels.ADMIN:
+        if get_jwt_identity() is not book.user_id and user.user_type is not UserLevels.ADMIN:
             abort(401, message=f"Only requesting user or admin can remove the request.")
 
         book.delete_from_db()
