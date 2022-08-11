@@ -8,14 +8,14 @@ class ShowRequestModel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(80))
-    year = db.Column(db.Integer)
+    year = db.Column(db.String(80))
     imdb_id = db.Column(db.String(80))
     request_date = db.Column(db.DateTime)
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     users = db.relationship('UserModel')
 
-    def __init__(self, title: str, year: int, imdb_id: str, user: int) -> None:
+    def __init__(self, title: str, year: str, imdb_id: str, user: int) -> None:
         self.title = title
         self.year = year
         self.imdb_id = imdb_id
@@ -39,8 +39,8 @@ class ShowRequestModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_all_by_user(cls, username: str) -> list[ShowRequestModel]:
-        return cls.query.filter_by(user=username).all()
+    def find_all_by_user(cls, user_id: int) -> list[ShowRequestModel]:
+        return cls.query.filter_by(user_id=user_id).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)

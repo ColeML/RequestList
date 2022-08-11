@@ -51,8 +51,8 @@ class BookRequestModel(db.Model):
         return cls.query.all()
 
     @classmethod
-    def find_all_by_user(cls, username: str) -> list[BookRequestModel]:
-        return cls.query.filter_by(user=username).all()
+    def find_all_by_user(cls, user_id: int) -> list[BookRequestModel]:
+        return cls.query.filter_by(user_id=user_id).all()
 
     def save_to_db(self) -> None:
         db.session.add(self)
