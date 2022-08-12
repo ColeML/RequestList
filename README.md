@@ -29,7 +29,6 @@ Supports albums and tracks.
 
 
 ## TODO List:
-* Assign User ID to Requests
 * Implement Email notifications
 * Implement Functional Tests
 * Implement Unit Tests
