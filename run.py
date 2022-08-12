@@ -1,9 +1,0 @@
-from app import app
-from api.db import db
-
-db.init_app(app)
-
-
-@app.before_first_request
-def create_tables() -> None:
-    db.create_all()
